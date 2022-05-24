@@ -83,6 +83,7 @@ export default function MUISignIn() {
                             id="email"
                             label="Email Address"
                             name="email"
+                            aria-label="email"
                             autoComplete="email"
                             autoFocus
                             error={"email" in errors}
@@ -93,7 +94,6 @@ export default function MUISignIn() {
                             required
                             fullWidth
                             {...register("password")}
-                            name="password"
                             label="Password"
                             type="password"
                             id="password"
@@ -106,6 +106,7 @@ export default function MUISignIn() {
                             label="Remember me"
                         />
                         <Button
+                            className="testButton"
                             type="submit"
                             fullWidth
                             variant="contained"
