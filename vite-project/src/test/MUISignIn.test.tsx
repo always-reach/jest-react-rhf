@@ -1,18 +1,24 @@
 /**
  * @jest-environment jsdom
  */
-
+import { render } from "@testing-library/react"
 import { describe } from '@jest/globals'
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { appRenderer } from './Helper/RenderHelper';
 import MUISignIn from '../pages/mui/SignIn'
 const { toBeInTheDocument } = require('@testing-library/jest-dom')
 
-const loginMock=()=>{
-    new Promise((resolve)=>{
-        resolve({ok:true,status:200})
+
+const loginMock = () =>
+    new Promise((resolve) => {
+        resolve({ status: 200 })
     })
-}
+
+const mockedNavigator = jest.fn();
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => mockedNavigator,
+}))
 
 describe("Login", () => {
     test("メールアドレス入力欄テスト", () => {
@@ -76,21 +82,22 @@ describe("Login", () => {
             expect(password).toHaveAttribute("aria-invalid", "true")
         }),
         test("ログイン完了後、トップ画面に遷移テスト", async () => {
-            //今回のテストで呼ばれるfetchは全て loginMock が代わりに動く
-            global.fetch = jest.fn().mockImplementation(loginMock)
             appRenderer(<MUISignIn />)
+            global.fetch = jest.fn().mockImplementation(loginMock)
             const email = screen.getByRole("textbox", { name: "Email Address" })
+
             const password = screen.getByLabelText("password", { exact: false })
             const button = screen.getByRole("button", { name: "Sign In" })
-            
+
 
             fireEvent.input(email, { target: { value: "hoge@gmail.com" } })
             fireEvent.input(password, { target: { value: "abcdefgh" } })
             fireEvent.submit(button)
-            await waitFor(()=>{
-                expect(screen.getByText("Test Top")).toBeInTheDocument()
+
+
+            await waitFor(() => {
+                expect(mockedNavigator).toHaveBeenCalledWith('/top');
             })
-            
-            
+
         })
 })

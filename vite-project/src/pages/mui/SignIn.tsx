@@ -53,7 +53,10 @@ export default function MUISignIn() {
         console.log("data", data)
         const response = await LoginAPI(data)
         if (response.status === 200) {
+            console.log("login success")
             navigate("/top")
+        }else{
+            console.log("login failed")
         }
     };
     return (
